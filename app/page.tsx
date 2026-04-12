@@ -4,13 +4,13 @@ import { useBuild } from "@/hooks/useBuild";
 import TerminalPane from "@/components/ui/terminal";
 import PhaseTracker from "@/components/ui/phase-tracker";
 import FileTree from "@/components/ui/file-tree";
-import Sidebar from "@/components/ui/sidebar";
+import Sidebar from "@/components/ui/sidebar";\nimport TemplatePicker from "@/components/ui/template-picker";\nimport { BlueprintTemplate } from "@/lib/ai/templates";
 import CodePreview from "@/components/ui/code-preview";
 import { Send, Zap, Cpu, Code2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function BuilderPage() {
-  const [prompt, setPrompt] = useState("");
+  const [prompt, setPrompt] = useState("");\n  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>();
   const { isRunning, logs, files, currentPhase, result, startBuild } = useBuild();
   const [selectedFile, setSelectedFile] = useState<any>(null);
 
@@ -58,7 +58,28 @@ export default function BuilderPage() {
         <div className="flex-1 flex gap-6 p-6 overflow-hidden">
           {/* Left Column: Input & Files */}
           <div className="w-80 lg:w-96 flex flex-col gap-6">
-            <section className="bg-surface/80 backdrop-blur-xl border border-border/50 p-6 rounded-xl flex flex-col gap-4 shadow-[0_0_20px_rgba(0,255,136,0.05)]">
+            <section className="bg-surface/80 backdrop-blur-xl border border-border/50 p-6 rounded-xl flex flex-col gap-6 shadow-[0_0_20px_rgba(0,255,136,0.05)]">
+              <TemplatePicker 
+                selectedId={selectedTemplateId}
+                onSelect={(template) => {
+                  setSelectedTemplateId(template.id);
+                  setPrompt(template.prompt);
+                }}
+              />
+
+              <div className="h-[1px] bg-border/50 w-full" />
+
+              <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Custom Architecture</h2>
+                  <Cpu className="w-4 h-4 text-text-dim" />
+                </div>
+                <textarea
+                  value={prompt}
+                  onChange={(e) => {
+                    setPrompt(e.target.value);
+                    setSelectedTemplateId(undefined);
+                  }}
               <div className="flex items-center justify-between">
                 <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Architect Prompt</h2>
                 <Cpu className="w-4 h-4 text-text-dim" />
