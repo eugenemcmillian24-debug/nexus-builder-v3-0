@@ -1,8 +1,8 @@
-"use client";
+import ReactDiffViewer from "react-diff-viewer-continued";\n"use client";
 import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { X, Save, Copy, Check, MessageSquare, Send, Github, Loader2 } from "lucide-react";
+import { X, Save, Copy, Check, MessageSquare, Send, Github, Loader2, GitCompare as Diff } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface CodePreviewProps {
@@ -17,7 +17,8 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
   const [editedContent, setEditedContent] = React.useState(content);
   const [copied, setCopied] = React.useState(false);\n  const [isRefining, setIsRefining] = React.useState(false);
   const [refinePrompt, setRefinePrompt] = React.useState("");
-  const [isPushing, setIsPushing] = React.useState(false);
+  const [isPushing, setIsPushing] = React.useState(false);\n  const [showDiff, setShowDiff] = React.useState(false);
+  const originalContent = React.useMemo(() => content, []);
 
   const handleRefine = async () => {
     if (!refinePrompt) return;
@@ -93,7 +94,14 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
               isEditing ? "bg-accent text-black border-accent" : "border-border text-text-dim hover:text-text"
             }`}
           >
-            {isEditing ? "VIEW_MODE" : "EDIT_MODE"}
+            {isEditing ? "VIEW_MODE" : "EDIT_MODE"}\n          </button>\n\n                    <button 
+            onClick={() => setShowDiff(!showDiff)}
+            className={`px-3 py-1.5 rounded text-[10px] font-bold border transition-all flex items-center gap-2 ${
+              showDiff ? "bg-purple/10 text-purple border-purple" : "border-border text-text-dim hover:text-text"
+            }`}
+          >
+            <Diff className="w-3.5 h-3.5" /> {showDiff ? "CODE_VIEW" : "DIFF_VIEW"}
+          </button>
           </button>
 
           {isEditing && (
