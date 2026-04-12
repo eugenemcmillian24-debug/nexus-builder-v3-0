@@ -1,0 +1,10 @@
+node_modules
+.next
+.env*
+*.ipynb
+*.session.dill
+write_files.ipynb
+vercel_fix.ipynb
+get_vercel_logs.ipynb
+check_vercel_status.ipynb
+*.dill
