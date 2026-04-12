@@ -5,18 +5,46 @@ import TerminalPane from "@/components/ui/terminal";
 import PhaseTracker from "@/components/ui/phase-tracker";
 import FileTree from "@/components/ui/file-tree";
 import Sidebar from "@/components/ui/sidebar";
+import CodePreview from "@/components/ui/code-preview";
 import { Send, Zap, Cpu, Code2 } from "lucide-react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function BuilderPage() {
   const [prompt, setPrompt] = useState("");
   const { isRunning, logs, files, currentPhase, result, startBuild } = useBuild();
+  const [selectedFile, setSelectedFile] = useState<any>(null);
+
+  // Allow local updates to files for preview editing
+  const [localFiles, setLocalFiles] = useState<any[]>([]);
+  React.useEffect(() => {
+    if (files.length > 0) setLocalFiles(files);
+  }, [files]);
+
+  const handleSaveFile = (newContent: string) => {
+    if (!selectedFile) return;
+    setLocalFiles(prev => prev.map(f => 
+      f.path === selectedFile.path ? { ...f, content: newContent } : f
+    ));
+    setSelectedFile({ ...selectedFile, content: newContent });
+  };
 
   return (
     <div className="flex h-screen bg-background text-text overflow-hidden">
       <Sidebar credits={150} />
 
-      <main className="flex-1 flex flex-col overflow-hidden">
+      <main className="flex-1 flex flex-col overflow-hidden relative">
+        {/* Code Preview Overlay */}
+        <AnimatePresence>
+          {selectedFile && (
+            <CodePreview 
+              path={selectedFile.path}
+              content={selectedFile.content}
+              onClose={() => setSelectedFile(null)}
+              onSave={handleSaveFile}
+            />
+          )}
+        </AnimatePresence>
+
         {/* Top Header */}
         <header className="h-16 border-b border-border bg-surface-2/50 backdrop-blur-md flex items-center justify-between px-8">
           <div className="flex items-center gap-4">
@@ -46,16 +74,21 @@ export default function BuilderPage() {
                 disabled={isRunning || !prompt}
                 className="w-full py-4 bg-accent text-black font-bold text-sm rounded-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] transition-all disabled:opacity-50"
               >
-                {isRunning ? "INITIALIZING..." : <><Send className="w-4 h-4" /> GENERATE</>}
+                {isRunning ? "EXECUTING..." : <><Send className="w-4 h-4" /> GENERATE</>}
               </button>
             </section>
 
             <section className="flex-1 bg-surface/80 backdrop-blur-xl border border-border/50 rounded-xl overflow-hidden flex flex-col">
-              <div className="p-4 border-b border-border bg-surface-2/50 text-[10px] font-bold text-text-dim uppercase flex justify-between">
+              <div className="p-4 border-b border-border bg-surface-2/50 text-[10px] font-bold text-text-dim uppercase flex justify-between items-center">
                 <span>File Registry</span>
-                <span className="text-accent">{files.length} ITEMS</span>
+                <span className="px-2 py-0.5 bg-accent/10 border border-accent/20 rounded text-accent">
+                  {localFiles.length} FILES
+                </span>
               </div>
-              <FileTree files={files} />
+              <FileTree 
+                files={localFiles} 
+                onSelectFile={(file) => setSelectedFile(file)} 
+              />
             </section>
           </div>
 
