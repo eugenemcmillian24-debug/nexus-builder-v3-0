@@ -1,44 +1,70 @@
 "use client";
-import { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { BuildEvent } from "@/hooks/useBuild";
+import { motion, AnimatePresence } from "framer-motion";
+import { Terminal as TerminalIcon, Maximize2, Copy } from "lucide-react";
 
 export default function TerminalPane({ logs, isRunning }: { logs: BuildEvent[], isRunning: boolean }) {
   const endRef = useRef<HTMLDivElement>(null);
+  const [autoScroll, setAutoScroll] = useState(true);
 
   useEffect(() => {
-    endRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [logs]);
+    if (autoScroll) endRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [logs, autoScroll]);
 
   return (
-    <div className="flex-1 bg-surface terminal-border flex flex-col overflow-hidden min-h-[500px]">
-      <div className="px-4 py-2 border-b border-border bg-surface-2 flex items-center justify-between">
-        <div className="flex gap-1.5">
-          <div className="w-2.5 h-2.5 rounded-full bg-red/20 border border-red/40" />
-          <div className="w-2.5 h-2.5 rounded-full bg-amber/20 border border-amber/40" />
-          <div className="w-2.5 h-2.5 rounded-full bg-accent/20 border border-accent/40" />
+    <div className="flex-1 bg-surface/80 backdrop-blur-xl border border-border/50 flex flex-col overflow-hidden min-h-[500px] rounded-xl shadow-[0_0_20px_rgba(0,255,136,0.05)]">
+      <div className="px-4 py-3 border-b border-border bg-surface-2/50 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <div className="flex gap-1.5">
+            <div className="w-3 h-3 rounded-full bg-red/40 border border-red/60" />
+            <div className="w-3 h-3 rounded-full bg-amber/40 border border-amber/60" />
+            <div className="w-3 h-3 rounded-full bg-accent/40 border border-accent/60" />
+          </div>
+          <div className="h-4 w-[1px] bg-border" />
+          <span className="text-[10px] font-bold text-text-dim flex items-center gap-2 tracking-widest uppercase">
+            <TerminalIcon className="w-3 h-3" /> NEXUS_STDOUT
+          </span>
         </div>
-        <span className="text-[10px] font-bold text-text-dim tracking-widest">TERMINAL_OUTPUT v1.0</span>
+        <div className="flex gap-2">
+          <button className="p-1.5 text-text-dim hover:text-text hover:bg-surface rounded transition-all"><Copy className="w-3.5 h-3.5" /></button>
+          <button className="p-1.5 text-text-dim hover:text-text hover:bg-surface rounded transition-all"><Maximize2 className="w-3.5 h-3.5" /></button>
+        </div>
       </div>
 
-      <div className="flex-1 p-6 font-code text-xs overflow-y-auto space-y-2 selection:bg-accent/30">
-        {logs.map((log, i) => (
-          <div key={i} className="flex gap-3 animate-in fade-in slide-in-from-left-2 duration-300">
-            <span className="text-text-dim shrink-0">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
-            <span className={
-              log.level === 'cmd' ? 'text-blue' :
-              log.level === 'ok' ? 'text-accent' :
-              log.level === 'err' ? 'text-red' :
-              log.level === 'code' ? 'text-purple' : 'text-text'
-            }>
-              {log.level === 'cmd' && "$ "}
-              {log.text}
-            </span>
-          </div>
-        ))}
+      <div className="flex-1 p-6 font-code text-[13px] overflow-y-auto space-y-1.5 bg-[#05050a]/80 custom-scrollbar">
+        <AnimatePresence initial={false}>
+          {logs.map((log, i) => (
+            <motion.div 
+              initial={{ opacity: 0, x: -10 }}
+              animate={{ opacity: 1, x: 0 }}
+              key={i} 
+              className="flex gap-4 group"
+            >
+              <span className="text-text-dim shrink-0 opacity-30 group-hover:opacity-100 transition-opacity">
+                {String(i + 1).padStart(3, '0')}
+              </span>
+              <span className={
+                log.level === 'cmd' ? 'text-blue' :
+                log.level === 'ok' ? 'text-accent' :
+                log.level === 'err' ? 'text-red' :
+                log.level === 'code' ? 'text-purple/80' : 'text-text/90'
+              }>
+                {log.level === 'cmd' && <span className="text-accent mr-2">➜</span>}
+                {log.text}
+              </span>
+            </motion.div>
+          ))}
+        </AnimatePresence>
+
         {isRunning && (
-          <div className="flex gap-3 text-accent animate-pulse">
-            <span className="text-text-dim">[{new Date().toLocaleTimeString([], { hour12: false })}]</span>
-            <span>$ EXECUTING_SYSTEM_CALL...</span>
+          <div className="flex gap-4 text-accent animate-pulse">
+            <span className="text-text-dim opacity-30">{String(logs.length + 1).padStart(3, '0')}</span>
+            <div className="flex items-center gap-2">
+              <span className="text-accent">➜</span>
+              <span>EXECUTING_AI_INFERENCE</span>
+              <span className="inline-block w-2 h-4 bg-accent animate-pulse ml-1" />
+            </div>
           </div>
         )}
         <div ref={endRef} />

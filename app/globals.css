@@ -4,20 +4,41 @@
 
 @layer base {
   body {
-    @apply bg-background text-text font-mono selection:bg-accent/30 selection:text-accent;
+    @apply bg-[#08080f] text-[#e2e8f0] font-mono selection:bg-[#00ff88]/30 selection:text-[#00ff88];
   }
 }
 
+@layer utilities {
+  .glow-accent {
+    box-shadow: 0 0 20px rgba(0, 255, 136, 0.15);
+  }
+  .glow-text-accent {
+    text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+  }
+  .glass-panel {
+    @apply bg-[#0d0d1a]/80 backdrop-blur-xl border border-[#1a1a2e]/50;
+  }
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+  width: 4px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: #1a1a2e;
+  border-radius: 10px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+  background: #2a2a4a;
+}
+
 .terminal-border {
-  border: 1px solid theme('colors.border');
+  border: 1px solid #1a1a2e;
   box-shadow: 0 0 15px rgba(0, 255, 136, 0.05);
 }
 
 .glitch {
   text-shadow: 2px 0 #ff4757, -2px 0 #00d4ff;
 }
-
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #08080f; }
-::-webkit-scrollbar-thumb { background: #1a1a2e; border-radius: 10px; }
-::-webkit-scrollbar-thumb:hover { background: #2a2a4a; }
