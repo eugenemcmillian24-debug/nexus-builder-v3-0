@@ -6,12 +6,13 @@ import { notFound } from "next/navigation";
 import { FileCode, Globe, Github, ChevronLeft } from "lucide-react";
 import Link from "next/link";
 
-export default async function BuildDetailPage({ params }: { params: { id: string } }) {
+export default async function BuildDetailPage({ params }: { params: Promise<{ id: string }> }) {
+  const { id } = await params;
   const user = await getUser();
   if (!user) return null;
 
   const build = await db.query.builds.findFirst({
-    where: and(eq(builds.id, parseInt(params.id)), eq(builds.userId, user.id)),
+    where: and(eq(builds.id, parseInt(id)), eq(builds.userId, user.id)),
   });
 
   if (!build) notFound();
