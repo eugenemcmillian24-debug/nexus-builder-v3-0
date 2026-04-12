@@ -5,7 +5,7 @@ import { users, builds, generatedFiles, creditTx } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { buildBlueprint, generateFileContent } from "@/lib/ai/router";
 import { pushToGitHub } from "@/lib/github/sync";
-import { deployToVercel } from "@/lib/deploy/vercel";
+import { deployToVercel } from "@/lib/deploy/vercel";\nimport { getDeploymentLogs } from "@/lib/deploy/vercel";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -63,10 +63,39 @@ export async function POST(req: NextRequest) {
         await db.update(builds).set({ repoUrl }).where(eq(builds.id, build.id));
         send({ type: "log", level: "ok", text: `Pushed to \${repoUrl}` });
 
-        // 5. Phase: Deploy
+                // 5. Phase: Deploy
         send({ type: "phase", phase: "deploy" });
         send({ type: "log", level: "cmd", text: "Deploying to Vercel..." });
-        const { deployUrl } = await deployToVercel(repoUrl, blueprint.suggestedRepoName);
+        const { deployUrl, deploymentId } = await deployToVercel(repoUrl, blueprint.suggestedRepoName);
+        send({ type: "log", level: "info", text: `Deployment initialized: ${deploymentId}` });
+
+        // Stream Vercel build logs
+        let lastLogId = "";
+        let retryCount = 0;
+        while (retryCount < 60) { // Polling logs for ~5 mins max
+          const events = await getDeploymentLogs(deploymentId);
+          const newEvents = events.filter((e: any) => e.id > lastLogId);
+
+          for (const event of newEvents) {
+            lastLogId = event.id;
+            const logText = event.payload?.text || event.text;
+            if (logText) {
+              send({ type: "log", level: "info", text: `[VERCEL] ${logText.trim()}` });
+            }
+          }
+
+          const statusRes = await fetch(`https://api.vercel.com/v13/deployments/${deploymentId}`, {
+            headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` }
+          });
+          const statusData = await statusRes.json();
+          if (statusData.status === "READY" || statusData.status === "ERROR") {
+             if (statusData.status === "ERROR") throw new Error("Vercel build failed.");
+             break;
+          }
+
+          await new Promise(r => setTimeout(r, 5000));
+          retryCount++;
+        }
 
         await db.update(builds).set({ 
           deployUrl, 
@@ -76,6 +105,7 @@ export async function POST(req: NextRequest) {
         }).where(eq(builds.id, build.id));
 
         send({ type: "done", repoUrl, deployUrl, fileCount: files.length });
+
         controller.close();
       } catch (err: any) {
         // Refund on error
