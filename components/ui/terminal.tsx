@@ -2,9 +2,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { BuildEvent } from "@/hooks/useBuild";
 import { motion, AnimatePresence } from "framer-motion";
-import { Terminal as TerminalIcon, Maximize2, Copy } from "lucide-react";
+import { Terminal as TerminalIcon, Maximize2, Copy, Zap } from "lucide-react";
 
-export default function TerminalPane({ logs, isRunning }: { logs: BuildEvent[], isRunning: boolean }) {
+export default function TerminalPane({ logs, isRunning, suggestions = [] }: { logs: BuildEvent[], isRunning: boolean, suggestions?: string[] }) {
   const endRef = useRef<HTMLDivElement>(null);
   const [autoScroll, setAutoScroll] = useState(true);
 
@@ -67,7 +67,25 @@ export default function TerminalPane({ logs, isRunning }: { logs: BuildEvent[], 
             </div>
           </div>
         )}
-        <div ref={endRef} />
+        <div ref={endRef} />\n        {suggestions.length > 0 && (
+          <div className="mt-6 p-4 bg-accent/5 border border-accent/20 rounded-lg animate-in fade-in slide-in-from-bottom-2">
+            <p className="text-[10px] font-bold text-accent uppercase tracking-widest mb-3 flex items-center gap-2">
+              <Zap className="w-3 h-3" /> Recommended_Actions
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {suggestions.map((cmd, i) => (
+                <button 
+                  key={i}
+                  onClick={() => navigator.clipboard.writeText(cmd)}
+                  className="px-3 py-1.5 bg-background border border-border rounded text-[11px] font-code hover:border-accent hover:text-accent transition-all flex items-center gap-2 group"
+                >
+                  <span className="text-accent opacity-50 group-hover:opacity-100">$</span> {cmd}
+                  <Copy className="w-3 h-3 opacity-0 group-hover:opacity-100 ml-1" />
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

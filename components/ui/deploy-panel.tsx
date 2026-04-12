@@ -1,4 +1,4 @@
-import { Globe, Server, Activity } from "lucide-react";
+import LiveStatusIndicator from "./live-status";\nimport { Globe, Server, Activity } from "lucide-react";
 
 export default function DeployPanel({ deployUrl }: { deployUrl?: string }) {
   return (
@@ -9,7 +9,7 @@ export default function DeployPanel({ deployUrl }: { deployUrl?: string }) {
         </h3>
         <div className="flex items-center gap-2">
           <div className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
-          <span className="text-[10px] text-accent font-bold">ONLINE</span>
+          <LiveStatusIndicator url={deployUrl || ""} />
         </div>
       </div>
 

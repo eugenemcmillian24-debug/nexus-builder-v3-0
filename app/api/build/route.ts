@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
 
         // 2. Phase: Scaffold
         send({ type: "phase", phase: "scaffold" });
-        send({ type: "log", level: "cmd", text: "Scaffolding project structure..." });
+        send({ type: "log", level: "cmd", text: "Scaffolding project structure..." });\n        send({ type: "suggestion", commands: ["npm install", "npm run dev"] });
 
                 // 3. Phase: Generate
         send({ type: "phase", phase: "generate" });
@@ -72,7 +72,14 @@ export async function POST(req: NextRequest) {
           send({ type: "log", level: "code", text: `[AGENT] Generated \${res.path}` });
         }
 
-        // 4. Phase: GitHub
+                // 3.5 Phase: Documentation
+        send({ type: "log", level: "cmd", text: "Generating project documentation (README.md)..." });
+        const readmeContent = await generateFileContent("README.md", blueprint, prompt);
+        const readmeSize = Buffer.byteLength(readmeContent);
+        await db.insert(generatedFiles).values({ buildId: build.id, path: "README.md", content: readmeContent, sizeBytes: readmeSize });
+        files.push({ path: "README.md", content: readmeContent });
+        send({ type: "file", path: "README.md", content: readmeContent, size: `${(readmeSize / 1024).toFixed(2)}kb`, ms: 1000 });
+\n        // 4. Phase: GitHub
         send({ type: "phase", phase: "github" });
         send({ type: "log", level: "cmd", text: "Pushing to GitHub..." });
         const repoUrl = await pushToGitHub(user.id, blueprint.suggestedRepoName, files);

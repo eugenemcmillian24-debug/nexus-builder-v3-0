@@ -11,7 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 
 export default function BuilderPage() {
   const [prompt, setPrompt] = useState("");\n  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>();
-  const { isRunning, logs, files, currentPhase, result, startBuild } = useBuild();
+  const { isRunning, logs, files, currentPhase, result, suggestions, startBuild } = useBuild();
   const [selectedFile, setSelectedFile] = useState<any>(null);
 
   // Allow local updates to files for preview editing
@@ -115,7 +115,7 @@ export default function BuilderPage() {
 
           {/* Right Column: Terminal & Output */}
           <div className="flex-1 flex flex-col gap-6">
-            <TerminalPane logs={logs} isRunning={isRunning} />
+            <TerminalPane logs={logs} isRunning={isRunning} suggestions={suggestions} />
 
             {result && (
               <motion.div 
