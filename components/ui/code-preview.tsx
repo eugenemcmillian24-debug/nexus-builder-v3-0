@@ -2,7 +2,7 @@
 import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { X, Save, Copy, Check } from "lucide-react";
+import { X, Save, Copy, Check, MessageSquare, Send, Github, Loader2 } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface CodePreviewProps {
@@ -15,7 +15,40 @@ interface CodePreviewProps {
 export default function CodePreview({ path, content, onClose, onSave }: CodePreviewProps) {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editedContent, setEditedContent] = React.useState(content);
-  const [copied, setCopied] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);\n  const [isRefining, setIsRefining] = React.useState(false);
+  const [refinePrompt, setRefinePrompt] = React.useState("");
+  const [isPushing, setIsPushing] = React.useState(false);
+
+  const handleRefine = async () => {
+    if (!refinePrompt) return;
+    setIsRefining(true);
+    try {
+      const res = await fetch("/api/refine", {
+        method: "POST",
+        body: JSON.stringify({ path, content: editedContent, prompt: refinePrompt }),
+      });
+      const { updatedCode, error } = await res.json();
+      if (error) throw new Error(error);
+      setEditedContent(updatedCode);
+      setRefinePrompt("");
+    } catch (err) {
+      console.error("Refinement failed:", err);
+    } finally {
+      setIsRefining(false);
+    }
+  };
+
+  const handlePush = async () => {
+    setIsPushing(true);
+    try {
+      // In a real app, this would call /api/github/sync-file
+      // For this demo, we'll simulate a 2s delay
+      await new Promise(r => setTimeout(r, 2000));
+      onSave?.(editedContent);
+    } finally {
+      setIsPushing(false);
+    }
+  };
 
   const extension = path.split(".").pop() || "typescript";
   const language = extension === "tsx" || extension === "ts" ? "typescript" : 
@@ -117,7 +150,35 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
         )}
       </div>
 
-      {/* Footer / Status Bar */}
+      {/* Refinement Bar */}
+      <div className="px-6 py-4 border-t border-border bg-surface-2/80 flex items-center gap-4">
+        <div className="flex-1 relative">
+          <MessageSquare className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-text-dim" />
+          <input 
+            value={refinePrompt}
+            onChange={(e) => setRefinePrompt(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleRefine()}
+            placeholder="Describe changes (e.g., 'make the button blue')..."
+            className="w-full bg-background border border-border pl-12 pr-4 py-3 text-sm font-code rounded-lg focus:border-accent outline-none transition-all"
+            disabled={isRefining}
+          />
+        </div>
+        <button 
+          onClick={handleRefine}
+          disabled={isRefining || !refinePrompt}
+          className="px-6 py-3 bg-accent text-black font-bold text-xs rounded-lg flex items-center gap-2 hover:glow-accent transition-all disabled:opacity-50"
+        >
+          {isRefining ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Send className="w-4 h-4" /> REFINE</>}
+        </button>
+        <div className="h-8 w-[1px] bg-border mx-2" />
+        <button 
+          onClick={handlePush}
+          disabled={isPushing}
+          className="px-6 py-3 bg-surface border border-border text-text-muted font-bold text-xs rounded-lg flex items-center gap-2 hover:border-accent hover:text-accent transition-all disabled:opacity-50"
+        >
+          {isPushing ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Github className="w-4 h-4" /> PUSH_SYNC</>}
+        </button>
+      </div>\n      {/* Footer / Status Bar */}
       <div className="px-6 py-2 border-t border-border bg-surface-2/50 flex items-center justify-between text-[10px] text-text-dim font-bold tracking-widest">
         <div className="flex gap-6">
           <span>LANG: {language.toUpperCase()}</span>
