@@ -1,4 +1,4 @@
-import Groq from "groq-sdk";
+import { AGENT_PROMPTS, routeToAgent } from "./agents";\nimport Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
@@ -40,9 +40,15 @@ export async function buildBlueprint(prompt: string) {
 }
 
 export async function generateFileContent(path: string, blueprint: any, prompt: string) {
-  const system = `You are a Senior Fullstack Engineer. Write the full code for the file: \${path}. 
-  Context: \${JSON.stringify(blueprint)}. 
-  User Prompt: \${prompt}.
-  Rules: Next.js 15, Tailwind, TypeScript, production-ready, no comments like "logic here", full file only.`;
-  return await callAI(system, `Generate file content for \${path}`, 8000);
+  const agentType = routeToAgent(path);
+  const agentPrompt = AGENT_PROMPTS[agentType];
+
+  const system = `\${agentPrompt}
+  You are writing the full code for: \${path}.
+  Overall App Architecture: \${JSON.stringify(blueprint)}.
+  User Requirement: \${prompt}.
+  Rules: Full file only, no placeholders, strict TypeScript, Next.js 15.`;
+
+  return await callAI(system, `Generate code for \${path}`, 8000);
+}`, 8000);
 }

@@ -42,18 +42,34 @@ export async function POST(req: NextRequest) {
         send({ type: "phase", phase: "scaffold" });
         send({ type: "log", level: "cmd", text: "Scaffolding project structure..." });
 
-        // 3. Phase: Generate
+                // 3. Phase: Generate
         send({ type: "phase", phase: "generate" });
+        send({ type: "log", level: "info", text: "Dispatching Specialized Agents (Frontend, Backend, DB, Config)..." });
+
         const files: { path: string, content: string }[] = [];
-        for (const path of blueprint.files) {
-          send({ type: "log", level: "code", text: `Generating \${path}...` });
+        const generateTasks = blueprint.files.map(async (path: string) => {
           const start = Date.now();
           const content = await generateFileContent(path, blueprint, prompt);
           const size = Buffer.byteLength(content);
-          files.push({ path, content });
 
           await db.insert(generatedFiles).values({ buildId: build.id, path, content, sizeBytes: size });
-          send({ type: "file", path, content, size: `\${(size / 1024).toFixed(2)}kb`, ms: Date.now() - start });
+
+          return { path, content, size, duration: Date.now() - start };
+        });
+
+        // Parallel execution with Promise.all
+        const results = await Promise.all(generateTasks);
+
+        for (const res of results) {
+          files.push({ path: res.path, content: res.content });
+          send({ 
+            type: "file", 
+            path: res.path, 
+            content: res.content, 
+            size: `\${(res.size / 1024).toFixed(2)}kb`, 
+            ms: res.duration 
+          });
+          send({ type: "log", level: "code", text: `[AGENT] Generated \${res.path}` });
         }
 
         // 4. Phase: GitHub
