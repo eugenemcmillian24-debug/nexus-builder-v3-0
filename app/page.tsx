@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { useBuild } from "@/hooks/useBuild";
 import TerminalPane from "@/components/ui/terminal";
 import PhaseTracker from "@/components/ui/phase-tracker";
