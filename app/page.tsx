@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useBuild } from "@/hooks/useBuild";
 import TerminalPane from "@/components/ui/terminal";
-import InteractiveTerminal from "@/components/ui/interactive-terminal";
+import InteractiveTerminal from "@/components/ui/interactive-terminal";\nimport EnvManager from "@/components/ui/env-manager";
 import PhaseTracker from "@/components/ui/phase-tracker";
 import FileTree from "@/components/ui/file-tree";
 import Sidebar from "@/components/ui/sidebar";
@@ -11,7 +11,7 @@ import TemplatePicker from "@/components/ui/template-picker";
 import { Send, Zap, Cpu, Code2, Monitor, Terminal as TerminalIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-type WorkspaceMode = "BUILDER" | "IDE" | "TERMINAL";
+type WorkspaceMode = "BUILDER" | "IDE" | "TERMINAL" | "ENV";
 
 export default function BuilderPage() {
   const [mode, setMode] = useState<WorkspaceMode>("BUILDER");
@@ -45,7 +45,17 @@ export default function BuilderPage() {
               onSave={handleSaveFile}
             />
           )}
-        </AnimatePresence>
+                    {mode === "ENV" && (
+              <motion.div 
+                key="env"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full"
+              >
+                <EnvManager buildId={result ? 1 : undefined} />
+              </motion.div>
+            )}\n          </AnimatePresence>
 
         {/* Workspace Mode Switcher Header */}
         <header className="h-16 border-b border-border bg-surface-2/50 backdrop-blur-md flex items-center justify-between px-8">
@@ -54,7 +64,7 @@ export default function BuilderPage() {
               {[
                 { id: "BUILDER", icon: Cpu, label: "ARCHITECT" },
                 { id: "IDE", icon: Code2, label: "EDITOR" },
-                { id: "TERMINAL", icon: TerminalIcon, label: "CONSOLE" }
+                { id: "TERMINAL", icon: TerminalIcon, label: "CONSOLE" },\n                { id: "ENV", icon: Shield, label: "SECRETS" }
               ].map((m) => (
                 <button
                   key={m.id}
@@ -160,7 +170,17 @@ export default function BuilderPage() {
                 <InteractiveTerminal buildId={result ? 1 : undefined} />
               </motion.div>
             )}
-          </AnimatePresence>
+                      {mode === "ENV" && (
+              <motion.div 
+                key="env"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full"
+              >
+                <EnvManager buildId={result ? 1 : undefined} />
+              </motion.div>
+            )}\n          </AnimatePresence>
         </div>
       </main>
     </div>
