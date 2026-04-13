@@ -59,3 +59,14 @@ export const creditTx = pgTable("credit_tx", {
   stripeId: text("stripe_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
 });
+
+export const apiKeys = pgTable("api_keys", {
+  id: serial("id").primaryKey(),
+  userId: text("user_id").references(() => users.id).notNull(),
+  key: text("key").notNull(),
+  name: text("name").notNull(),
+  lastUsedAt: timestamp("last_sync_at"),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (t) => ({
+  keyIdx: uniqueIndex("key_idx").on(t.key),
+}));
