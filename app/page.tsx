@@ -50,42 +50,6 @@ export default function BuilderPage() {
               onSave={handleSaveFile}
             />
           )}
-                    {mode === "ENV" && (
-              <motion.div 
-                key="env"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="h-full"
-              >
-                <EnvManager buildId={result ? 1 : undefined} />
-              </motion.div>
-            )}
-                      {mode === "API" && (
-              <motion.div 
-                key="api"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="h-full"
-              >
-                <ApiKeyManager />
-              </motion.div>
-            )}
-                      {mode === "ANALYTICS" && (
-              <motion.div 
-                key="analytics"
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="h-full flex flex-col"
-              >
-                <div className="px-6 py-4 border-b border-border bg-surface-2/50 flex items-center justify-between mb-6">
-                  <h3 className="text-sm font-bold uppercase tracking-widest">Advanced_Monitoring</h3>
-                </div>
-                <AnalyticsView />
-              </motion.div>
-            )}
           </AnimatePresence>
 
         {/* Workspace Mode Switcher Header */}
@@ -141,15 +105,15 @@ export default function BuilderPage() {
                     />
                     <div className="h-[1px] bg-border/50 w-full" />
                     <div className="flex flex-col gap-4">
-                      <div className="flex items-center justify-between">
-                        <div className="space-y-4 mb-4">
-                  <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Engine Parameters</h2>
-                  <ModelSelector value={selectedModel} onChange={setSelectedModel} />
-                </div>
-                <div className="h-[1px] bg-border/50 w-full my-2" />
-                <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Architect Prompt</h2>
-                        <Monitor className="w-4 h-4 text-text-dim" />
-                      </div>
+                      <div className="space-y-4 mb-4">
+                    <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Engine Parameters</h2>
+                    <ModelSelector value={selectedModel} onChange={setSelectedModel} />
+                  </div>
+                  <div className="h-[1px] bg-border/50 w-full my-2" />
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Architect Prompt</h2>
+                    <Monitor className="w-4 h-4 text-text-dim" />
+                  </div>
                       <textarea
                         value={prompt}
                         onChange={(e) => { setPrompt(e.target.value); setSelectedTemplateId(undefined); }}

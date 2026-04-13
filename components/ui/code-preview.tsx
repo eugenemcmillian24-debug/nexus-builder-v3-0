@@ -134,7 +134,6 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
           >
             <Diff className="w-3.5 h-3.5" /> {showDiff ? "CODE_VIEW" : "DIFF_VIEW"}
           </button>
-          </button>
 
           {isEditing && (
             <button 

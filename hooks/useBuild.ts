@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 
-export type BuildEvent = 
+export type BuildEvent =
   | { type: "log"; level: "cmd" | "info" | "ok" | "code" | "err"; text: string }
   | { type: "phase"; phase: "blueprint" | "scaffold" | "generate" | "github" | "deploy" | "done"; data?: any }
   | { type: "file"; path: string; content: string; size: string; ms: number }
@@ -38,9 +38,7 @@ export function useBuild() {
       if (done) break;
 
       const chunk = decoder.decode(value);
-      const lines = chunk.split("
-
-");
+      const lines = chunk.split("\n\n");
 
       for (const line of lines) {
         if (!line.startsWith("data: ")) continue;
