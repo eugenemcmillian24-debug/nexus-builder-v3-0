@@ -14,21 +14,20 @@ export async function POST(req: NextRequest) {
   const agentType = routeToAgent(path);
   const agentPrompt = AGENT_PROMPTS[agentType];
 
-  const system = `\${agentPrompt}
-  You are refining an existing file: \${path}.
+  const system = `${agentPrompt}
+  You are refining an existing file: ${path}.
   Current Code:
-  \${content}
+  ${content}
 
-  User Refinement Request: \${prompt}
+  User Refinement Request: ${prompt}
 
-  Context Blueprint: \${JSON.stringify(blueprint)}
+  Context Blueprint: ${JSON.stringify(blueprint)}
 
   Rules: Return ONLY the full updated code for this file. No explanations, no markdown blocks.`;
 
   try {
-    const updatedCode = await callAI(system, `Refine the code for \${path} based on: \${prompt}`, 8000);
-    return NextResponse.json({ updatedCode: updatedCode.replace(/```[a-z]*
-|```/g, "").trim() });
+    const updatedCode = await callAI(system, `Refine the code for ${path} based on: ${prompt}`, 8000);
+    return NextResponse.json({ updatedCode: updatedCode.replace(/```[a-z]*\n|```/g, "").trim() });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

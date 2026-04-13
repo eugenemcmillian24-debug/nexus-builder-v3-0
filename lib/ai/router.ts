@@ -20,7 +20,7 @@ export async function callAI(system: string, user: string, maxTokens = 4096) {
     const response = await fetch("https://openrouter.ai/api/v1/chat/completions", {
       method: "POST",
       headers: {
-        "Authorization": `Bearer \${process.env.OPENROUTER_API_KEY}`,
+        "Authorization": `Bearer ${process.env.OPENROUTER_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
@@ -36,7 +36,7 @@ export async function callAI(system: string, user: string, maxTokens = 4096) {
 export async function buildBlueprint(prompt: string) {
   const system = `You are a Nexus Architect. Return a valid JSON object only. No markdown.
   Structure: { appName, description, suggestedRepoName, files: string[], apiRoutes: string[], dbTables: string[], requiredEnvVars: string[], techStack: string[] }`;
-  const res = await callAI(system, `Build blueprint for: \${prompt}`, 2048);
+  const res = await callAI(system, `Build blueprint for: ${prompt}`, 2048);
   return JSON.parse(res.replace(/```json|```/g, ""));
 }
 
@@ -44,12 +44,11 @@ export async function generateFileContent(path: string, blueprint: any, prompt: 
   const agentType = routeToAgent(path);
   const agentPrompt = AGENT_PROMPTS[agentType];
 
-  const system = `\${agentPrompt}
-  You are writing the full code for: \${path}.
-  Overall App Architecture: \${JSON.stringify(blueprint)}.
-  User Requirement: \${prompt}.
+  const system = `${agentPrompt}
+  You are writing the full code for: ${path}.
+  Overall App Architecture: ${JSON.stringify(blueprint)}.
+  User Requirement: ${prompt}.
   Rules: Full file only, no placeholders, strict TypeScript, Next.js 15.`;
 
-  return await callAI(system, `Generate code for \${path}`, 8000);
-}`, 8000);
+  return await callAI(system, `Generate code for ${path}`, 8000);
 }

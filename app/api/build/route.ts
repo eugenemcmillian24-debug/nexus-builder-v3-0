@@ -25,9 +25,7 @@ export async function POST(req: NextRequest) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const send = (data: any) => controller.enqueue(encoder.encode(`data: \${JSON.stringify(data)}
-
-`));
+      const send = (data: any) => controller.enqueue(encoder.encode(`data: \${JSON.stringify(data)}\n\n`));
 
       try {
         // 0. Deduct Credits
@@ -46,7 +44,7 @@ export async function POST(req: NextRequest) {
         send({ type: "log", level: "cmd", text: "Scaffolding project structure..." });
         send({ type: "suggestion", commands: ["npm install", "npm run dev"] });
 
-                // 3. Phase: Generate
+        // 3. Phase: Generate
         send({ type: "phase", phase: "generate" });
         send({ type: "log", level: "info", text: "Dispatching Specialized Agents (Frontend, Backend, DB, Config)..." });
 
@@ -66,23 +64,23 @@ export async function POST(req: NextRequest) {
 
         for (const res of results) {
           files.push({ path: res.path, content: res.content });
-          send({ 
-            type: "file", 
-            path: res.path, 
-            content: res.content, 
-            size: `\${(res.size / 1024).toFixed(2)}kb`, 
-            ms: res.duration 
+          send({
+            type: "file",
+            path: res.path,
+            content: res.content,
+            size: `\${(res.size / 1024).toFixed(2)}kb`,
+            ms: res.duration
           });
           send({ type: "log", level: "code", text: `[AGENT] Generated \${res.path}` });
         }
 
-                // 3.5 Phase: Documentation
+        // 3.5 Phase: Documentation
         send({ type: "log", level: "cmd", text: "Generating project documentation (README.md)..." });
         const readmeContent = await generateFileContent("README.md", blueprint, prompt);
         const readmeSize = Buffer.byteLength(readmeContent);
         await db.insert(generatedFiles).values({ buildId: build.id, path: "README.md", content: readmeContent, sizeBytes: readmeSize });
         files.push({ path: "README.md", content: readmeContent });
-        send({ type: "file", path: "README.md", content: readmeContent, size: `${(readmeSize / 1024).toFixed(2)}kb`, ms: 1000 });
+        send({ type: "file", path: "README.md", content: readmeContent, size: `\${(readmeSize / 1024).toFixed(2)}kb`, ms: 1000 });
 
         // 4. Phase: GitHub
         send({ type: "phase", phase: "github" });
@@ -91,11 +89,11 @@ export async function POST(req: NextRequest) {
         await db.update(builds).set({ repoUrl }).where(eq(builds.id, build.id));
         send({ type: "log", level: "ok", text: `Pushed to \${repoUrl}` });
 
-                // 5. Phase: Deploy
+        // 5. Phase: Deploy
         send({ type: "phase", phase: "deploy" });
         send({ type: "log", level: "cmd", text: "Deploying to Vercel..." });
         const { deployUrl, deploymentId } = await deployToVercel(repoUrl, blueprint.suggestedRepoName);
-        send({ type: "log", level: "info", text: `Deployment initialized: ${deploymentId}` });
+        send({ type: "log", level: "info", text: `Deployment initialized: \${deploymentId}` });
 
         // Stream Vercel build logs
         let lastLogId = "";
@@ -108,12 +106,12 @@ export async function POST(req: NextRequest) {
             lastLogId = event.id;
             const logText = event.payload?.text || event.text;
             if (logText) {
-              send({ type: "log", level: "info", text: `[VERCEL] ${logText.trim()}` });
+              send({ type: "log", level: "info", text: `[VERCEL] \${logText.trim()}` });
             }
           }
 
-          const statusRes = await fetch(`https://api.vercel.com/v13/deployments/${deploymentId}`, {
-            headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` }
+          const statusRes = await fetch(`https://api.vercel.com/v13/deployments/\${deploymentId}`, {
+            headers: { Authorization: `Bearer \${process.env.VERCEL_TOKEN}` }
           });
           const statusData = await statusRes.json();
           if (statusData.status === "READY" || statusData.status === "ERROR") {
@@ -125,11 +123,11 @@ export async function POST(req: NextRequest) {
           retryCount++;
         }
 
-        await db.update(builds).set({ 
-          deployUrl, 
-          status: "complete", 
+        await db.update(builds).set({
+          deployUrl,
+          status: "complete",
           fileCount: files.length,
-          completedAt: new Date() 
+          completedAt: new Date()
         }).where(eq(builds.id, build.id));
 
         send({ type: "done", repoUrl, deployUrl, fileCount: files.length });

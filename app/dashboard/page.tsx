@@ -22,7 +22,7 @@ export default async function DashboardPage() {
         <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h1 className="text-3xl font-bold glitch mb-2">OPERATOR_DASHBOARD</h1>
-            <p className="text-text-muted">Welcome back, \${userData?.name || "User"}.</p>
+            <p className="text-text-muted">Welcome back, ${userData?.name || "User"}.</p>
           </div>
           <div className="flex gap-4">
             <div className="p-4 bg-surface terminal-border flex items-center gap-3">
@@ -54,29 +54,29 @@ export default async function DashboardPage() {
               </div>
             ) : (
               userBuilds.map((build) => (
-                <Link 
-                  key={build.id} 
-                  href={`/dashboard/builds/\${build.id}`}
+                <div
+                  key={build.id}
                   className="group p-6 bg-surface terminal-border hover:border-accent transition-all flex flex-col md:flex-row md:items-center justify-between gap-4"
                 >
-                  <div>
-                    <p className="text-xs text-text-dim mb-1">{new Date(build.createdAt).toLocaleString()}</p>
-                    <h3 className="font-bold text-text group-hover:text-accent transition-colors truncate max-w-md">
-                      {build.prompt}
-                    </h3>
-                  </div>
+                  <Link href={`/dashboard/builds/${build.id}`} className="flex-1">
+                    <div>
+                      <p className="text-xs text-text-dim mb-1">{new Date(build.createdAt).toLocaleString()}</p>
+                      <h3 className="font-bold text-text group-hover:text-accent transition-colors truncate max-w-md">
+                        {build.prompt}
+                      </h3>
+                    </div>
+                  </Link>
                   <div className="flex items-center gap-6">
                     <div className="text-right">
                       <p className="text-[10px] text-text-dim uppercase">Status</p>
-                      <p className={`text-xs font-bold \${build.status === 'complete' ? 'text-accent' : 'text-orange'}`}>
+                      <p className={`text-xs font-bold ${build.status === 'complete' ? 'text-accent' : 'text-orange'}`}>
                         {build.status.toUpperCase()}
                       </p>
                     </div>
                     {build.deployUrl && (
-                      <a 
-                        href={build.deployUrl} 
-                        target="_blank" 
-                        onClick={(e) => e.stopPropagation()}
+                      <a
+                        href={build.deployUrl}
+                        target="_blank"
                         className="p-2 text-text-muted hover:text-blue"
                       >
                         <ExternalLink className="w-4 h-4" />
@@ -84,10 +84,9 @@ export default async function DashboardPage() {
                     )}
                     {build.status === "complete" && (
                       <RestoreButton buildId={build.id} />
-                      </a>
                     )}
                   </div>
-                </Link>
+                </div>
               ))
             )}
           </div>
