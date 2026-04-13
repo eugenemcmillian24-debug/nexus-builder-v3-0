@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Zap, History, Settings, LogOut, Terminal as TerminalIcon } from "lucide-react";
+import { LayoutDashboard, Zap, History, Settings, LogOut, Terminal as TerminalIcon } from "lucide-react";\nimport TeamSwitcher from "./team-switcher";
 import { motion } from "framer-motion";
 
 const NAV_ITEMS = [
@@ -21,6 +21,10 @@ export default function Sidebar({ credits }: { credits: number }) {
           <Zap className="w-5 h-5 text-black fill-black" />
         </div>
         <span className="hidden lg:block font-bold tracking-tighter text-xl">NEXUS</span>
+      </div>
+
+      <div className="px-4 mb-4 hidden lg:block">
+        <TeamSwitcher />
       </div>
 
       <nav className="flex-1 px-4 space-y-2 mt-4">

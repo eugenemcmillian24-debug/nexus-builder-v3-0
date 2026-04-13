@@ -8,6 +8,9 @@ export const users = pgTable("users", {
   credits: integer("credits").default(0).notNull(),
   plan: text("plan").default("starter").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  openaiKey: text("openai_key"),
+  anthropicKey: text("anthropic_key"),
+  groqKey: text("groq_key"),
 });
 
 export const builds = pgTable("builds", {
@@ -21,7 +24,11 @@ export const builds = pgTable("builds", {
   blueprint: jsonb("blueprint"),
   creditsUsed: integer("credits_used").default(45).notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  openaiKey: text("openai_key"),
+  anthropicKey: text("anthropic_key"),
+  groqKey: text("groq_key"),
   completedAt: timestamp("completed_at"),
+  orgId: integer("org_id").references(() => organizations.id),
 });
 
 export const githubRepos = pgTable("github_repos", {
@@ -37,6 +44,10 @@ export const githubRepos = pgTable("github_repos", {
   syncDirection: text("sync_direction").default("both").notNull(),
   deploymentId: text("deployment_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  openaiKey: text("openai_key"),
+  anthropicKey: text("anthropic_key"),
+  groqKey: text("groq_key"),
+  orgId: integer("org_id").references(() => organizations.id),
 }, (t) => ({
   userRepoIdx: uniqueIndex("user_repo_idx").on(t.userId, t.repoName),
 }));
@@ -48,6 +59,9 @@ export const generatedFiles = pgTable("generated_files", {
   content: text("content").notNull(),
   sizeBytes: integer("size_bytes").notNull(),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  openaiKey: text("openai_key"),
+  anthropicKey: text("anthropic_key"),
+  groqKey: text("groq_key"),
 });
 
 export const creditTx = pgTable("credit_tx", {
@@ -58,6 +72,9 @@ export const creditTx = pgTable("credit_tx", {
   buildId: integer("build_id"),
   stripeId: text("stripe_id"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  openaiKey: text("openai_key"),
+  anthropicKey: text("anthropic_key"),
+  groqKey: text("groq_key"),
 });
 
 export const apiKeys = pgTable("api_keys", {
@@ -67,6 +84,10 @@ export const apiKeys = pgTable("api_keys", {
   name: text("name").notNull(),
   lastUsedAt: timestamp("last_sync_at"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
+  openaiKey: text("openai_key"),
+  anthropicKey: text("anthropic_key"),
+  groqKey: text("groq_key"),
+  orgId: integer("org_id").references(() => organizations.id),
 }, (t) => ({
   keyIdx: uniqueIndex("key_idx").on(t.key),
 }));
