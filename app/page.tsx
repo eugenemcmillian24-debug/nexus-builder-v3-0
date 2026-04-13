@@ -9,16 +9,16 @@ import PhaseTracker from "@/components/ui/phase-tracker";
 import FileTree from "@/components/ui/file-tree";
 import Sidebar from "@/components/ui/sidebar";
 import CodePreview from "@/components/ui/code-preview";
-import TemplatePicker from "@/components/ui/template-picker";
+import TemplatePicker from "@/components/ui/template-picker";\nimport ModelSelector from "@/components/ui/model-selector";\nimport AnalyticsView from "@/components/ui/analytics-view";
 import { Send, Zap, Cpu, Code2, Monitor, Terminal as TerminalIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
-type WorkspaceMode = "BUILDER" | "IDE" | "TERMINAL" | "ENV" | "API";
+type WorkspaceMode = "BUILDER" | "IDE" | "TERMINAL" | "ENV" | "API" | "ANALYTICS";
 
 export default function BuilderPage() {
   const [mode, setMode] = useState<WorkspaceMode>("BUILDER");
   const [prompt, setPrompt] = useState("");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>();
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>();\n  const [selectedModel, setSelectedModel] = useState("qwen/qwen-2.5-72b-instruct:free");
   const { isRunning, logs, files, currentPhase, result, suggestions, startBuild } = useBuild();
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [localFiles, setLocalFiles] = useState<any[]>([]);
@@ -69,7 +69,20 @@ export default function BuilderPage() {
                 <ApiKeyManager />
               </motion.div>
             )}
-          </AnimatePresence>
+                      {mode === "ANALYTICS" && (
+              <motion.div 
+                key="analytics"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full flex flex-col"
+              >
+                <div className="px-6 py-4 border-b border-border bg-surface-2/50 flex items-center justify-between mb-6">
+                  <h3 className="text-sm font-bold uppercase tracking-widest">Advanced_Monitoring</h3>
+                </div>
+                <AnalyticsView />
+              </motion.div>
+            )}\n          </AnimatePresence>
 
         {/* Workspace Mode Switcher Header */}
         <header className="h-16 border-b border-border bg-surface-2/50 backdrop-blur-md flex items-center justify-between px-8">
@@ -80,7 +93,7 @@ export default function BuilderPage() {
                 { id: "IDE", icon: Code2, label: "EDITOR" },
                 { id: "TERMINAL", icon: TerminalIcon, label: "CONSOLE" },
                 { id: "ENV", icon: Shield, label: "SECRETS" },
-                { id: "API", icon: Key, label: "API" }
+                { id: "API", icon: Key, label: "API" },\n                { id: "ANALYTICS", icon: Monitor, label: "STATS" }
               ].map((m) => (
                 <button
                   key={m.id}
@@ -124,7 +137,7 @@ export default function BuilderPage() {
                     <div className="h-[1px] bg-border/50 w-full" />
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center justify-between">
-                        <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Architect Prompt</h2>
+                        <div className="space-y-4 mb-4">\n                  <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Engine Parameters</h2>\n                  <ModelSelector value={selectedModel} onChange={setSelectedModel} />\n                </div>\n                <div className="h-[1px] bg-border/50 w-full my-2" />\n                <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Architect Prompt</h2>
                         <Monitor className="w-4 h-4 text-text-dim" />
                       </div>
                       <textarea
@@ -134,7 +147,7 @@ export default function BuilderPage() {
                         className="w-full h-48 bg-background/50 border border-border p-4 text-sm font-code rounded-lg focus:border-accent outline-none transition-all resize-none"
                       />
                       <button
-                        onClick={() => startBuild(prompt)}
+                        onClick={() => startBuild(prompt, { model: selectedModel })}
                         disabled={isRunning || !prompt}
                         className="w-full py-4 bg-accent text-black font-bold text-sm rounded-lg flex items-center justify-center gap-2 hover:shadow-[0_0_20px_rgba(0,255,136,0.3)] transition-all disabled:opacity-50"
                       >
@@ -208,7 +221,20 @@ export default function BuilderPage() {
                 <ApiKeyManager />
               </motion.div>
             )}
-          </AnimatePresence>
+                      {mode === "ANALYTICS" && (
+              <motion.div 
+                key="analytics"
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                className="h-full flex flex-col"
+              >
+                <div className="px-6 py-4 border-b border-border bg-surface-2/50 flex items-center justify-between mb-6">
+                  <h3 className="text-sm font-bold uppercase tracking-widest">Advanced_Monitoring</h3>
+                </div>
+                <AnalyticsView />
+              </motion.div>
+            )}\n          </AnimatePresence>
         </div>
       </main>
     </div>

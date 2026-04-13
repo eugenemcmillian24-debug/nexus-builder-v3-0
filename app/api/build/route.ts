@@ -15,7 +15,7 @@ export async function POST(req: NextRequest) {
   const user = await getUser();
   if (!user) return new Response("Unauthorized", { status: 401 });
 
-  const { prompt } = await req.json();
+  const { prompt, model } = await req.json();
   const userData = await db.query.users.findFirst({ where: eq(users.id, user.id) });
 
   if (!userData || userData.credits < 45) {
@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
         const files: { path: string, content: string }[] = [];
         const generateTasks = blueprint.files.map(async (path: string) => {
           const start = Date.now();
-          const content = await generateFileContent(path, blueprint, prompt);
+          const content = await generateFileContent(path, blueprint, prompt, { model });
           const size = Buffer.byteLength(content);
 
           await db.insert(generatedFiles).values({ buildId: build.id, path, content, sizeBytes: size });

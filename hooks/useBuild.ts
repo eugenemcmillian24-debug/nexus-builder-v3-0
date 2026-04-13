@@ -15,7 +15,7 @@ export function useBuild() {
   const [currentPhase, setCurrentPhase] = useState<string>("idle");
   const [result, setResult] = useState<{ repoUrl: string; deployUrl: string } | null>(null);\n  const [suggestions, setSuggestions] = useState<string[]>([]);
 
-  const startBuild = async (prompt: string) => {
+  const startBuild = async (prompt: string, options?: { model?: string }) => {
     setIsRunning(true);
     setLogs([]);
     setFiles([]);
@@ -23,7 +23,7 @@ export function useBuild() {
 
     const response = await fetch("/api/build", {
       method: "POST",
-      body: JSON.stringify({ prompt }),
+      body: JSON.stringify({ prompt, ...options }),
     });
 
     const reader = response.body?.getReader();
