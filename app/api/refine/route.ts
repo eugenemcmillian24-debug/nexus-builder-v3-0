@@ -27,7 +27,8 @@ export async function POST(req: NextRequest) {
 
   try {
     const updatedCode = await callAI(system, `Refine the code for \${path} based on: \${prompt}`, 8000);
-    return NextResponse.json({ updatedCode: updatedCode.replace(/```[a-z]*\n|```/g, "").trim() });
+    return NextResponse.json({ updatedCode: updatedCode.replace(/```[a-z]*
+|```/g, "").trim() });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

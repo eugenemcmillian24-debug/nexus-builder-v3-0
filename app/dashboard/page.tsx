@@ -2,7 +2,8 @@ import { getUser } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { builds, users } from "@/lib/db/schema";
 import { desc, eq } from "drizzle-orm";
-import Link from "next/link";\nimport { RestoreButton } from "@/components/ui/restore-button";
+import Link from "next/link";
+import { RestoreButton } from "@/components/ui/restore-button";
 import { Terminal, ExternalLink, Cpu, CreditCard, RotateCcw, Loader2 } from "lucide-react";
 
 export default async function DashboardPage() {
@@ -78,7 +79,11 @@ export default async function DashboardPage() {
                         onClick={(e) => e.stopPropagation()}
                         className="p-2 text-text-muted hover:text-blue"
                       >
-                        <ExternalLink className="w-4 h-4" />\n                      </a>\n                    )}\n                    {build.status === "complete" && (\n                      <RestoreButton buildId={build.id} />
+                        <ExternalLink className="w-4 h-4" />
+                      </a>
+                    )}
+                    {build.status === "complete" && (
+                      <RestoreButton buildId={build.id} />
                       </a>
                     )}
                   </div>

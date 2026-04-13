@@ -5,7 +5,8 @@ import { users, builds, generatedFiles, creditTx } from "@/lib/db/schema";
 import { eq, sql } from "drizzle-orm";
 import { buildBlueprint, generateFileContent } from "@/lib/ai/router";
 import { pushToGitHub } from "@/lib/github/sync";
-import { deployToVercel } from "@/lib/deploy/vercel";\nimport { getDeploymentLogs } from "@/lib/deploy/vercel";
+import { deployToVercel } from "@/lib/deploy/vercel";
+import { getDeploymentLogs } from "@/lib/deploy/vercel";
 
 export const runtime = "nodejs";
 export const maxDuration = 300;
@@ -24,7 +25,9 @@ export async function POST(req: NextRequest) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const send = (data: any) => controller.enqueue(encoder.encode(`data: \${JSON.stringify(data)}\n\n`));
+      const send = (data: any) => controller.enqueue(encoder.encode(`data: \${JSON.stringify(data)}
+
+`));
 
       try {
         // 0. Deduct Credits
@@ -40,7 +43,8 @@ export async function POST(req: NextRequest) {
 
         // 2. Phase: Scaffold
         send({ type: "phase", phase: "scaffold" });
-        send({ type: "log", level: "cmd", text: "Scaffolding project structure..." });\n        send({ type: "suggestion", commands: ["npm install", "npm run dev"] });
+        send({ type: "log", level: "cmd", text: "Scaffolding project structure..." });
+        send({ type: "suggestion", commands: ["npm install", "npm run dev"] });
 
                 // 3. Phase: Generate
         send({ type: "phase", phase: "generate" });
@@ -79,7 +83,8 @@ export async function POST(req: NextRequest) {
         await db.insert(generatedFiles).values({ buildId: build.id, path: "README.md", content: readmeContent, sizeBytes: readmeSize });
         files.push({ path: "README.md", content: readmeContent });
         send({ type: "file", path: "README.md", content: readmeContent, size: `${(readmeSize / 1024).toFixed(2)}kb`, ms: 1000 });
-\n        // 4. Phase: GitHub
+
+        // 4. Phase: GitHub
         send({ type: "phase", phase: "github" });
         send({ type: "log", level: "cmd", text: "Pushing to GitHub..." });
         const repoUrl = await pushToGitHub(user.id, blueprint.suggestedRepoName, files);

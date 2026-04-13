@@ -1,4 +1,5 @@
-import { AGENT_PROMPTS, routeToAgent } from "./agents";\nimport Groq from "groq-sdk";
+import { AGENT_PROMPTS, routeToAgent } from "./agents";
+import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 

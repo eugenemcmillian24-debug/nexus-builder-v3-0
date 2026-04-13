@@ -2,7 +2,9 @@
 import React, { useState } from "react";
 import { useBuild } from "@/hooks/useBuild";
 import TerminalPane from "@/components/ui/terminal";
-import InteractiveTerminal from "@/components/ui/interactive-terminal";\nimport EnvManager from "@/components/ui/env-manager";\nimport ApiKeyManager from "@/components/ui/api-key-manager";
+import InteractiveTerminal from "@/components/ui/interactive-terminal";
+import EnvManager from "@/components/ui/env-manager";
+import ApiKeyManager from "@/components/ui/api-key-manager";
 import PhaseTracker from "@/components/ui/phase-tracker";
 import FileTree from "@/components/ui/file-tree";
 import Sidebar from "@/components/ui/sidebar";
@@ -55,7 +57,8 @@ export default function BuilderPage() {
               >
                 <EnvManager buildId={result ? 1 : undefined} />
               </motion.div>
-            )}\n                      {mode === "API" && (
+            )}
+                      {mode === "API" && (
               <motion.div 
                 key="api"
                 initial={{ opacity: 0, y: 10 }}
@@ -65,7 +68,8 @@ export default function BuilderPage() {
               >
                 <ApiKeyManager />
               </motion.div>
-            )}\n          </AnimatePresence>
+            )}
+          </AnimatePresence>
 
         {/* Workspace Mode Switcher Header */}
         <header className="h-16 border-b border-border bg-surface-2/50 backdrop-blur-md flex items-center justify-between px-8">
@@ -74,7 +78,9 @@ export default function BuilderPage() {
               {[
                 { id: "BUILDER", icon: Cpu, label: "ARCHITECT" },
                 { id: "IDE", icon: Code2, label: "EDITOR" },
-                { id: "TERMINAL", icon: TerminalIcon, label: "CONSOLE" },\n                { id: "ENV", icon: Shield, label: "SECRETS" },\n                { id: "API", icon: Key, label: "API" }
+                { id: "TERMINAL", icon: TerminalIcon, label: "CONSOLE" },
+                { id: "ENV", icon: Shield, label: "SECRETS" },
+                { id: "API", icon: Key, label: "API" }
               ].map((m) => (
                 <button
                   key={m.id}
@@ -190,7 +196,8 @@ export default function BuilderPage() {
               >
                 <EnvManager buildId={result ? 1 : undefined} />
               </motion.div>
-            )}\n                      {mode === "API" && (
+            )}
+                      {mode === "API" && (
               <motion.div 
                 key="api"
                 initial={{ opacity: 0, y: 10 }}
@@ -200,7 +207,8 @@ export default function BuilderPage() {
               >
                 <ApiKeyManager />
               </motion.div>
-            )}\n          </AnimatePresence>
+            )}
+          </AnimatePresence>
         </div>
       </main>
     </div>
