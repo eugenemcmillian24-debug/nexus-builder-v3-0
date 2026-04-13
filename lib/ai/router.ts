@@ -3,15 +3,6 @@ import Groq from "groq-sdk";
 
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
-
-export const FREE_MODELS = [
-  { id: "qwen/qwen-2.5-72b-instruct:free", name: "Qwen 2.5 72B (Free)" },
-  { id: "google/gemini-flash-1.5-exp:free", name: "Gemini 1.5 Flash (Free)" },
-  { id: "meta-llama/llama-3.1-70b-instruct:free", name: "Llama 3.1 70B (Free)" },
-  { id: "mistralai/mistral-7b-instruct:free", name: "Mistral 7B (Free)" },
-  { id: "microsoft/phi-3-mini-128k-instruct:free", name: "Phi-3 Mini (Free)" },
-];
-
 export async function callAI(system: string, user: string, maxTokens = 4096, config?: { model?: string, groqKey?: string, openrouterKey?: string }) {
   const modelId = config?.model || "qwen/qwen-2.5-72b-instruct:free";
   const orKey = config?.openrouterKey || process.env.OPENROUTER_API_KEY;
@@ -48,7 +39,6 @@ export async function callAI(system: string, user: string, maxTokens = 4096, con
   const data = await response.json();
   return data.choices[0]?.message?.content || "";
 }
-
 
 export async function buildBlueprint(prompt: string) {
   const system = `You are a Nexus Architect. Return a valid JSON object only. No markdown.

@@ -1,4 +1,5 @@
-import LiveStatusIndicator from "./live-status";\nimport { Globe, Server, Activity } from "lucide-react";
+import LiveStatusIndicator from "./live-status";
+import { Globe, Server, Activity } from "lucide-react";
 
 export default function DeployPanel({ deployUrl }: { deployUrl?: string }) {
   return (

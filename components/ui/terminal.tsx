@@ -67,7 +67,8 @@ export default function TerminalPane({ logs, isRunning, suggestions = [] }: { lo
             </div>
           </div>
         )}
-        <div ref={endRef} />\n        {suggestions.length > 0 && (
+        <div ref={endRef} />
+        {suggestions.length > 0 && (
           <div className="mt-6 p-4 bg-accent/5 border border-accent/20 rounded-lg animate-in fade-in slide-in-from-bottom-2">
             <p className="text-[10px] font-bold text-accent uppercase tracking-widest mb-3 flex items-center gap-2">
               <Zap className="w-3 h-3" /> Recommended_Actions

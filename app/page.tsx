@@ -9,7 +9,9 @@ import PhaseTracker from "@/components/ui/phase-tracker";
 import FileTree from "@/components/ui/file-tree";
 import Sidebar from "@/components/ui/sidebar";
 import CodePreview from "@/components/ui/code-preview";
-import TemplatePicker from "@/components/ui/template-picker";\nimport ModelSelector from "@/components/ui/model-selector";\nimport AnalyticsView from "@/components/ui/analytics-view";
+import TemplatePicker from "@/components/ui/template-picker";
+import ModelSelector from "@/components/ui/model-selector";
+import AnalyticsView from "@/components/ui/analytics-view";
 import { Send, Zap, Cpu, Code2, Monitor, Terminal as TerminalIcon } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -18,7 +20,8 @@ type WorkspaceMode = "BUILDER" | "IDE" | "TERMINAL" | "ENV" | "API" | "ANALYTICS
 export default function BuilderPage() {
   const [mode, setMode] = useState<WorkspaceMode>("BUILDER");
   const [prompt, setPrompt] = useState("");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>();\n  const [selectedModel, setSelectedModel] = useState("qwen/qwen-2.5-72b-instruct:free");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string | undefined>();
+  const [selectedModel, setSelectedModel] = useState("qwen/qwen-2.5-72b-instruct:free");
   const { isRunning, logs, files, currentPhase, result, suggestions, startBuild } = useBuild();
   const [selectedFile, setSelectedFile] = useState<any>(null);
   const [localFiles, setLocalFiles] = useState<any[]>([]);
@@ -82,7 +85,8 @@ export default function BuilderPage() {
                 </div>
                 <AnalyticsView />
               </motion.div>
-            )}\n          </AnimatePresence>
+            )}
+          </AnimatePresence>
 
         {/* Workspace Mode Switcher Header */}
         <header className="h-16 border-b border-border bg-surface-2/50 backdrop-blur-md flex items-center justify-between px-8">
@@ -93,12 +97,13 @@ export default function BuilderPage() {
                 { id: "IDE", icon: Code2, label: "EDITOR" },
                 { id: "TERMINAL", icon: TerminalIcon, label: "CONSOLE" },
                 { id: "ENV", icon: Shield, label: "SECRETS" },
-                { id: "API", icon: Key, label: "API" },\n                { id: "ANALYTICS", icon: Monitor, label: "STATS" }
+                { id: "API", icon: Key, label: "API" },
+                { id: "ANALYTICS", icon: Monitor, label: "STATS" }
               ].map((m) => (
                 <button
                   key={m.id}
                   onClick={() => setMode(m.id as WorkspaceMode)}
-                  className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-[10px] font-bold transition-all \${
+                  className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-[10px] font-bold transition-all ${
                     mode === m.id ? "bg-accent text-black" : "text-text-dim hover:text-text"
                   }`}
                 >
@@ -137,7 +142,12 @@ export default function BuilderPage() {
                     <div className="h-[1px] bg-border/50 w-full" />
                     <div className="flex flex-col gap-4">
                       <div className="flex items-center justify-between">
-                        <div className="space-y-4 mb-4">\n                  <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Engine Parameters</h2>\n                  <ModelSelector value={selectedModel} onChange={setSelectedModel} />\n                </div>\n                <div className="h-[1px] bg-border/50 w-full my-2" />\n                <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Architect Prompt</h2>
+                        <div className="space-y-4 mb-4">
+                  <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Engine Parameters</h2>
+                  <ModelSelector value={selectedModel} onChange={setSelectedModel} />
+                </div>
+                <div className="h-[1px] bg-border/50 w-full my-2" />
+                <h2 className="text-xs font-bold text-accent uppercase tracking-widest">Architect Prompt</h2>
                         <Monitor className="w-4 h-4 text-text-dim" />
                       </div>
                       <textarea
@@ -234,7 +244,8 @@ export default function BuilderPage() {
                 </div>
                 <AnalyticsView />
               </motion.div>
-            )}\n          </AnimatePresence>
+            )}
+          </AnimatePresence>
         </div>
       </main>
     </div>

@@ -25,11 +25,13 @@ export async function POST(req: NextRequest) {
   const encoder = new TextEncoder();
   const stream = new ReadableStream({
     async start(controller) {
-      const send = (data: any) => controller.enqueue(encoder.encode(`data: \${JSON.stringify(data)}\n\n`));
+      const send = (data: any) => controller.enqueue(encoder.encode(`data: ${JSON.stringify(data)}
+
+`));
 
       try {
         // 0. Deduct Credits
-        await db.update(users).set({ credits: sql`\${users.credits} - 45` }).where(eq(users.id, user.id));
+        await db.update(users).set({ credits: sql`${users.credits} - 45` }).where(eq(users.id, user.id));
         const [build] = await db.insert(builds).values({ userId: user.id, prompt, status: "building" }).returning();
 
         // 1. Phase: Blueprint
@@ -37,7 +39,7 @@ export async function POST(req: NextRequest) {
         send({ type: "log", level: "cmd", text: "Analyzing prompt and architecting nexus..." });
         const blueprint = await buildBlueprint(prompt);
         await db.update(builds).set({ blueprint }).where(eq(builds.id, build.id));
-        send({ type: "log", level: "ok", text: `Blueprint generated: \${blueprint.appName}` });
+        send({ type: "log", level: "ok", text: `Blueprint generated: ${blueprint.appName}` });
 
         // 2. Phase: Scaffold
         send({ type: "phase", phase: "scaffold" });
@@ -68,10 +70,10 @@ export async function POST(req: NextRequest) {
             type: "file",
             path: res.path,
             content: res.content,
-            size: `\${(res.size / 1024).toFixed(2)}kb`,
+            size: `${(res.size / 1024).toFixed(2)}kb`,
             ms: res.duration
           });
-          send({ type: "log", level: "code", text: `[AGENT] Generated \${res.path}` });
+          send({ type: "log", level: "code", text: `[AGENT] Generated ${res.path}` });
         }
 
         // 3.5 Phase: Documentation
@@ -80,20 +82,20 @@ export async function POST(req: NextRequest) {
         const readmeSize = Buffer.byteLength(readmeContent);
         await db.insert(generatedFiles).values({ buildId: build.id, path: "README.md", content: readmeContent, sizeBytes: readmeSize });
         files.push({ path: "README.md", content: readmeContent });
-        send({ type: "file", path: "README.md", content: readmeContent, size: `\${(readmeSize / 1024).toFixed(2)}kb`, ms: 1000 });
+        send({ type: "file", path: "README.md", content: readmeContent, size: `${(readmeSize / 1024).toFixed(2)}kb`, ms: 1000 });
 
         // 4. Phase: GitHub
         send({ type: "phase", phase: "github" });
         send({ type: "log", level: "cmd", text: "Pushing to GitHub..." });
         const repoUrl = await pushToGitHub(user.id, blueprint.suggestedRepoName, files);
         await db.update(builds).set({ repoUrl }).where(eq(builds.id, build.id));
-        send({ type: "log", level: "ok", text: `Pushed to \${repoUrl}` });
+        send({ type: "log", level: "ok", text: `Pushed to ${repoUrl}` });
 
         // 5. Phase: Deploy
         send({ type: "phase", phase: "deploy" });
         send({ type: "log", level: "cmd", text: "Deploying to Vercel..." });
         const { deployUrl, deploymentId } = await deployToVercel(repoUrl, blueprint.suggestedRepoName);
-        send({ type: "log", level: "info", text: `Deployment initialized: \${deploymentId}` });
+        send({ type: "log", level: "info", text: `Deployment initialized: ${deploymentId}` });
 
         // Stream Vercel build logs
         let lastLogId = "";
@@ -106,12 +108,12 @@ export async function POST(req: NextRequest) {
             lastLogId = event.id;
             const logText = event.payload?.text || event.text;
             if (logText) {
-              send({ type: "log", level: "info", text: `[VERCEL] \${logText.trim()}` });
+              send({ type: "log", level: "info", text: `[VERCEL] ${logText.trim()}` });
             }
           }
 
-          const statusRes = await fetch(`https://api.vercel.com/v13/deployments/\${deploymentId}`, {
-            headers: { Authorization: `Bearer \${process.env.VERCEL_TOKEN}` }
+          const statusRes = await fetch(`https://api.vercel.com/v13/deployments/${deploymentId}`, {
+            headers: { Authorization: `Bearer ${process.env.VERCEL_TOKEN}` }
           });
           const statusData = await statusRes.json();
           if (statusData.status === "READY" || statusData.status === "ERROR") {
@@ -135,7 +137,7 @@ export async function POST(req: NextRequest) {
         controller.close();
       } catch (err: any) {
         // Refund on error
-        await db.update(users).set({ credits: sql`\${users.credits} + 45` }).where(eq(users.id, user.id));
+        await db.update(users).set({ credits: sql`${users.credits} + 45` }).where(eq(users.id, user.id));
         send({ type: "error", message: err.message });
         controller.close();
       }

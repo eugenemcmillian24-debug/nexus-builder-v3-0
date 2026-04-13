@@ -1,4 +1,5 @@
-import ReactDiffViewer from "react-diff-viewer-continued";\n"use client";
+import ReactDiffViewer from "react-diff-viewer-continued";
+"use client";
 import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
@@ -15,9 +16,11 @@ interface CodePreviewProps {
 export default function CodePreview({ path, content, onClose, onSave }: CodePreviewProps) {
   const [isEditing, setIsEditing] = React.useState(false);
   const [editedContent, setEditedContent] = React.useState(content);
-  const [copied, setCopied] = React.useState(false);\n  const [isRefining, setIsRefining] = React.useState(false);
+  const [copied, setCopied] = React.useState(false);
+  const [isRefining, setIsRefining] = React.useState(false);
   const [refinePrompt, setRefinePrompt] = React.useState("");
-  const [isPushing, setIsPushing] = React.useState(false);\n  const [isDeploying, setIsDeploying] = React.useState(false);
+  const [isPushing, setIsPushing] = React.useState(false);
+  const [isDeploying, setIsDeploying] = React.useState(false);
 
   const handleRedeploy = async () => {
     setIsDeploying(true);
@@ -34,7 +37,8 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
     } finally {
       setIsDeploying(false);
     }
-  };\n  const [showDiff, setShowDiff] = React.useState(false);
+  };
+  const [showDiff, setShowDiff] = React.useState(false);
   const originalContent = React.useMemo(() => content, []);
 
   const handleRefine = async () => {
@@ -111,14 +115,19 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
               isEditing ? "bg-accent text-black border-accent" : "border-border text-text-dim hover:text-text"
             }`}
           >
-            {isEditing ? "VIEW_MODE" : "EDIT_MODE"}\n          </button>\n\n                    <button 
+            {isEditing ? "VIEW_MODE" : "EDIT_MODE"}
+          </button>
+
+                    <button 
             onClick={handleRedeploy}
             disabled={isDeploying}
             className="px-3 py-1.5 bg-accent/10 border border-accent/20 text-accent rounded text-[10px] font-bold hover:bg-accent hover:text-black transition-all flex items-center gap-2"
           >
             {isDeploying ? <Loader2 className="w-3 h-3 animate-spin" /> : <Rocket className="w-3 h-3" />}
             DEPLOY_FILE
-          </button>\n          <button \n            onClick={() => setShowDiff(!showDiff)}
+          </button>
+          <button 
+            onClick={() => setShowDiff(!showDiff)}
             className={`px-3 py-1.5 rounded text-[10px] font-bold border transition-all flex items-center gap-2 ${
               showDiff ? "bg-purple/10 text-purple border-purple" : "border-border text-text-dim hover:text-text"
             }`}
@@ -209,7 +218,8 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
         >
           {isPushing ? <Loader2 className="w-4 h-4 animate-spin" /> : <><Github className="w-4 h-4" /> PUSH_SYNC</>}
         </button>
-      </div>\n      {/* Footer / Status Bar */}
+      </div>
+      {/* Footer / Status Bar */}
       <div className="px-6 py-2 border-t border-border bg-surface-2/50 flex items-center justify-between text-[10px] text-text-dim font-bold tracking-widest">
         <div className="flex gap-6">
           <span>LANG: {language.toUpperCase()}</span>

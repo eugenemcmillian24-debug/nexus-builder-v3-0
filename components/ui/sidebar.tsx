@@ -1,7 +1,8 @@
 "use client";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LayoutDashboard, Zap, History, Settings, LogOut, Terminal as TerminalIcon } from "lucide-react";\nimport TeamSwitcher from "./team-switcher";
+import { LayoutDashboard, Zap, History, Settings, LogOut, Terminal as TerminalIcon } from "lucide-react";
+import TeamSwitcher from "./team-switcher";
 import { motion } from "framer-motion";
 
 const NAV_ITEMS = [
