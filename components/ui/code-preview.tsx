@@ -2,7 +2,7 @@ import ReactDiffViewer from "react-diff-viewer-continued";\n"use client";
 import React from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { X, Save, Copy, Check, MessageSquare, Send, Github, Loader2, GitCompare as Diff } from "lucide-react";
+import { X, Save, Copy, Check, MessageSquare, Send, Github, Loader2, GitCompare as Diff, Rocket } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface CodePreviewProps {
@@ -17,7 +17,24 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
   const [editedContent, setEditedContent] = React.useState(content);
   const [copied, setCopied] = React.useState(false);\n  const [isRefining, setIsRefining] = React.useState(false);
   const [refinePrompt, setRefinePrompt] = React.useState("");
-  const [isPushing, setIsPushing] = React.useState(false);\n  const [showDiff, setShowDiff] = React.useState(false);
+  const [isPushing, setIsPushing] = React.useState(false);\n  const [isDeploying, setIsDeploying] = React.useState(false);
+
+  const handleRedeploy = async () => {
+    setIsDeploying(true);
+    try {
+      const res = await fetch("/api/deploy/file", {
+        method: "POST",
+        body: JSON.stringify({ path, content: editedContent, repoName: "nexus-project" }),
+      });
+      const data = await res.json();
+      if (data.error) throw new Error(data.error);
+      alert("Redeployment triggered: " + data.deployUrl);
+    } catch (err) {
+      console.error("Redeploy failed:", err);
+    } finally {
+      setIsDeploying(false);
+    }
+  };\n  const [showDiff, setShowDiff] = React.useState(false);
   const originalContent = React.useMemo(() => content, []);
 
   const handleRefine = async () => {
@@ -95,7 +112,13 @@ export default function CodePreview({ path, content, onClose, onSave }: CodePrev
             }`}
           >
             {isEditing ? "VIEW_MODE" : "EDIT_MODE"}\n          </button>\n\n                    <button 
-            onClick={() => setShowDiff(!showDiff)}
+            onClick={handleRedeploy}
+            disabled={isDeploying}
+            className="px-3 py-1.5 bg-accent/10 border border-accent/20 text-accent rounded text-[10px] font-bold hover:bg-accent hover:text-black transition-all flex items-center gap-2"
+          >
+            {isDeploying ? <Loader2 className="w-3 h-3 animate-spin" /> : <Rocket className="w-3 h-3" />}
+            DEPLOY_FILE
+          </button>\n          <button \n            onClick={() => setShowDiff(!showDiff)}
             className={`px-3 py-1.5 rounded text-[10px] font-bold border transition-all flex items-center gap-2 ${
               showDiff ? "bg-purple/10 text-purple border-purple" : "border-border text-text-dim hover:text-text"
             }`}
